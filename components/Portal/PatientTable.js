@@ -95,21 +95,18 @@ function Table({ columns, data }) {
                   <td
                     className="expand"
                     onClick={() => toggleCard(row.values.patientnumber)}
-                  >
-                    {openCard === row.values.patientnumber ? (
-                      <FontAwesomeIcon icon={faCaretDown} />
-                    ) : (
-                      <FontAwesomeIcon icon={faCaretRight} />
-                    )}
-                  </td>
+                  ></td>
                   {row.cells.map(cell => {
                     return (
                       <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
                     )
                   })}
                   <td>
-                    <Link href={`/patient/${row.original.patientId}`}>
-                      Details
+                    <Link
+                      href={`/patient/[id]`}
+                      as={`/patient/${row.original.patientId}`}
+                    >
+                      <a>Details</a>
                     </Link>
                   </td>
                 </tr>
@@ -132,7 +129,7 @@ function Table({ columns, data }) {
 
       <div className="row align-items-baseline border-top p-2 justify-content-center">
         <div className="col-12 col-md-4 text-center text-md-left">
-          Go to page{' '}
+          Go to page
           <input
             type="number"
             defaultValue={pageIndex + 1}
@@ -220,7 +217,11 @@ function PatientTable({ patients }) {
         accessor: 'patientId',
       },
       {
-        Header: 'Announced on',
+        Header: 'Name',
+        accessor: 'name',
+      },
+      {
+        Header: 'Reported on',
         accessor: 'reportedOn',
       },
       {
@@ -232,20 +233,28 @@ function PatientTable({ patients }) {
         accessor: 'gender',
       },
       {
-        Header: 'City',
-        accessor: 'city',
+        Header: 'Address',
+        accessor: 'address',
       },
       {
-        Header: 'District',
-        accessor: 'district',
+        Header: 'Phone',
+        accessor: 'phone',
       },
       {
-        Header: 'State',
-        accessor: 'state',
+        Header: 'Hospital?',
+        accessor: 'hospital',
       },
       {
-        Header: 'Status',
-        accessor: 'status',
+        Header: 'Facility?',
+        accessor: 'facility',
+      },
+      {
+        Header: 'Health Status',
+        accessor: 'health',
+      },
+      {
+        Header: 'Quarantine Status',
+        accessor: 'quarantine',
       },
     ],
     []
@@ -256,3 +265,14 @@ function PatientTable({ patients }) {
 }
 
 export default PatientTable
+
+// <td
+//                     className="expand"
+//                     onClick={() => toggleCard(row.values.patientnumber)}
+//                   >
+//                     {openCard === row.values.patientnumber ? (
+//                       <FontAwesomeIcon icon={faCaretDown} />
+//                     ) : (
+//                       <FontAwesomeIcon icon={faCaretRight} />
+//                     )}
+//                   </td>
