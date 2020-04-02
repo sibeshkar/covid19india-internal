@@ -1,34 +1,64 @@
 import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/router'
 import ReactLoading from 'react-loading'
 import axios from 'axios'
 
-import { parseCookies } from '../util/parse'
+import { parseCookies } from '../../util/parse'
 
-import Layout from '../components/layout'
-import PatientTable from '../components/Portal/PatientTable'
-import DownloadBlock from '../components/Portal/PatientTable'
+import Layout from '../../components/layout'
+import LocationTable from '../../components/LocationTable/Table'
+import { generateHospitalTable } from '../../components/LocationTable/utils'
 
-function Home(props) {
-  const router = useRouter()
-
-  useEffect(() => console.log(props.auth), [])
-
+function HospitalTable(props) {
   const [fetched, setFetched] = useState(false)
-  const [patients, setPatients] = useState([])
+  const [entries, setEntries] = useState([
+    {
+      hospital: 'RML',
+      total: 56,
+      underTreatment: 45,
+      recovered: 26,
+      deceased: 2,
+    },
+    {
+      hospital: 'LNJP',
+      total: 56,
+      underTreatment: 45,
+      recovered: 26,
+      deceased: 2,
+    },
+  ])
+  const [tableSchema, setTableSchema] = useState([
+    {
+      Header: 'Hospital Name',
+      accessor: 'hospital',
+    },
+    {
+      Header: 'Total Patients',
+      accessor: 'total',
+    },
+    {
+      Header: 'In Treatment',
+      accessor: 'inTreatment',
+    },
+    {
+      Header: 'Recovered',
+      accessor: 'recovered',
+    },
+    {
+      Header: 'Deceased',
+      accessor: 'deceased',
+    },
+  ])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   useEffect(() => {
     async function fetchRawData() {
-      const response = await axios.get(
-        // 'https://api.covid19india.org/raw_data.json'
-        '/api/raw'
-      )
+      const response = await axios.get('/api/raw')
       if (response.data) {
         // setPatients(response.data.raw_data.filter(p => p.detectedstate))
-        console.log(response.data)
-        setPatients(response.data.data.rawPatientData)
+
+        console.log(generateHospitalTable(response.data.data.rawPatientData))
+        setEntries(generateHospitalTable(response.data.data.rawPatientData))
         setFetched(true)
         setLoading(false)
       } else {
@@ -62,16 +92,18 @@ function Home(props) {
             <ReactLoading type="spin" color="#000" />
           </div>
         ) : (
-          <PatientTable patients={patients} search={router.query.search} />
+          <LocationTable
+            entries={entries}
+            schema={tableSchema}
+            locationType="hospital"
+          />
         )}
-
-        {/* <DownloadBlock patients={patients} /> */}
       </div>
     </Layout>
   )
 }
 
-Home.getInitialProps = ({ req, res }) => {
+HospitalTable.getInitialProps = ({ req, res }) => {
   const cookies = parseCookies(req)
 
   if (res && !cookies.auth) {
@@ -88,4 +120,4 @@ Home.getInitialProps = ({ req, res }) => {
   }
 }
 
-export default Home
+export default HospitalTable
